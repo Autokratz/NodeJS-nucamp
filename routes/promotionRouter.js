@@ -1,31 +1,33 @@
 const express = require('express');
-const Promotion = require('../models/Promotion');
+const Promotion = require('../models/promotion');
+
 
 const promotionRouter = express.Router();
 
 promotionRouter.route('/')
     .get((req, res, next) => {
         Promotion.find()
-            .then(Promotions => {
+            .then(promotions => {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
-                res.json(Promotions);
+                res.json(promotions);
             })
             .catch(err => next(err));
     })
     .post((req, res, next) => {
         Promotion.create(req.body)
-            .then(Promotion => {
-                console.log('Promotion Created', Promotion);
+            .then(promotion => {
+                console.log('Promotion Created ', promotion);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
-                res.json(Promotion);
+                res.json(promotion);
             })
+
             .catch(err => next(err));
     })
     .put((req, res) => {
         res.statusCode = 403;
-        res.end('PUT operation not supported on /Promotions');
+        res.end('PUT operation not supported on /promotions');
     })
     .delete((req, res, next) => {
         Promotion.deleteMany()
@@ -40,25 +42,26 @@ promotionRouter.route('/')
 promotionRouter.route('/:promotionId')
     .get((req, res, next) => {
         Promotion.findById(req.params.promotionId)
-            .then(Promotion => {
+            .then(promotion => {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
-                res.json(Promotion);
+                res.json(promotion);
             })
+
             .catch(err => next(err));
     })
     .post((req, res) => {
         res.statusCode = 403;
-        res.end(`POST operation not supported on /Promotions/${req.params.promotionId}`);
+        res.end(`POST operation not supported on /promotions/${req.params.promotionId}`);
     })
     .put((req, res, next) => {
         Promotion.findByIdAndUpdate(req.params.promotionId, {
             $set: req.body
         }, {new: true})
-            .then(Promotion => {
+            .then(promotion => {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
-                res.json(Promotion)
+                res.json(promotion);
             })
             .catch(err => next(err));
     })

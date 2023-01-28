@@ -7,13 +7,17 @@ const partnerSchema = new Schema({
         required: true,
         unique: true
     },
+
     image: {
         type: String,
         required: true
     },
+
     featured: {
-        type: Boolean
+        type: Boolean,
+        default: false
     },
+    
     description: {
         type: String,
         required: true
