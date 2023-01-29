@@ -2,10 +2,8 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
-const session = require('express-session');
-const FileStore = require('session-file-store')(session); // TODO review first class functions
 const passport = require('passport');
-const authenticate = require('./authenticate');
+const config = require('./config');
 const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
@@ -13,7 +11,8 @@ var usersRouter = require('./routes/users');
 const campsiteRouter = require('./routes/campsiteRouter');
 const promotionRouter = require('./routes/promotionRouter');
 const partnerRouter = require('./routes/partnerRouter');
-const url = "mongodb://127.0.0.1:27017/nucampsite"; // Recent updates, localhost does not work
+
+const url = config.mongoUrl;
 const connect = mongoose.connect(url, {
     useCreateIndex: true,
     useFindAndModify: false,
@@ -30,36 +29,13 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(session({
-    name: 'session-id',
-    secret: 'ophelia-82-89-339922-1583',
-    saveUninitialized: false,
-    resave: false,
-    store: new FileStore()
-}));
 
 // Auth
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-function auth(req, res, next) {
-    console.log(req.user);
-
-    if (!req.user) {
-        console.log(req.session); // Log the current session details
-        // False if the cookies is not assigned
-        const err = new Error('You are not authenticated!');
-        err.status = 401;
-        return next(err);
-    } else {
-       return next(); // Pass to next middleware
-    }
-}
-
-app.use(auth); // Note that middleware is cascading
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/campsites', campsiteRouter);
 app.use('/promotions', promotionRouter);
