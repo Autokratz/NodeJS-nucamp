@@ -6,9 +6,8 @@ const router = express.Router();
 
 
 
-router
-  .route('/')
-  .get(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+
     User.find()
       .then((users) => {
         res.statusCode = 200;
@@ -37,7 +36,7 @@ router.post('/signup', (req, res) => {
         user.save((err) => {
           if (err) {
             res.statusCode = 500;
-            res.statusHeader('Content-Type', 'application/json');
+            res.setHeader('Content-Type', 'application/json');
             res.json({ err: err });
             return;
           }
